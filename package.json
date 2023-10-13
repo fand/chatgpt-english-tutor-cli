@@ -1,6 +1,6 @@
 {
   "name": "@fand/chatgpt-english-tutor-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "type": "module",
@@ -15,7 +15,13 @@
     "openai": "^3.1.0",
     "rc": "^1.2.8"
   },
-  "keywords": [],
+  "bugs": "https://github.com/fand/chatgpt-english-tutor-cli/issues",
+  "repository": "https://github.com/fand/chatgpt-english-tutor-cli",
+  "keywords": [
+    "ChatGPT",
+    "CLI",
+    "English"
+  ],
   "author": "AMAGI <mail@amagi.dev> (https://amagi.dev/)",
   "license": "MIT"
 }

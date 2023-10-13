@@ -1,6 +1,6 @@
 # ChatGPT English Tutor CLI
 
-![Example of the commands](./example.png)
+![Example of the commands](example.png)
 
 This repository contains multiple commands to assist with learning and writing English.
 
