@@ -1,0 +1,21 @@
+{
+  "name": "@fand/chatgpt-english-tutor-cli",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "naturalize": "bin/naturalize.js",
+    "rephrase": "bin/rephrase.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "openai": "^3.1.0",
+    "rc": "^1.2.8"
+  },
+  "keywords": [],
+  "author": "AMAGI <mail@amagi.dev> (https://amagi.dev/)",
+  "license": "MIT"
+}
