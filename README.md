@@ -43,9 +43,9 @@ $ echo 'Pipes also work!' | naturalize
 Pipes work too!
 
 $ naturalize
-If no arguments are passed, naturalize will read the text input on the terminal.
-The input will be concatenated until a blank line is inserted, then it shows the output.
-
+> If no arguments are passed, naturalize will read the text input on the terminal.
+> The input will be concatenated until a blank line is inserted, then it shows the output.
+>
 If no arguments are passed, 'naturalize' will read the text input from the terminal. The input will continue to be concatenated until a blank line is inserted, at which point the output will be displayed.
 ```
 
