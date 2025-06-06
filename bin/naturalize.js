@@ -15,7 +15,10 @@ const writableStdout = new Writable({
   },
 });
 
-const OPENAI_API_KEY = rc("chatgptenglish").OPENAI_API_KEY;
+const config = rc("chatgptenglish");
+const OPENAI_API_KEY = config.OPENAI_API_KEY;
+const DEFAULT_LANGUAGE = config.DEFAULT_LANGUAGE || "English";
+
 if (!OPENAI_API_KEY) {
   console.error("Please save your API key in `~/.config/chatgptenglish` file.");
   process.exit(1);
@@ -24,9 +27,19 @@ if (!OPENAI_API_KEY) {
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 (async function main() {
-  if (process.argv.length > 2) {
-    const input = process.argv.slice(2).join(" ");
-    await run(input);
+  let lang = DEFAULT_LANGUAGE;
+  let inputArgs = process.argv.slice(2);
+  
+  // Check for --lang option
+  const langIndex = inputArgs.findIndex(arg => arg === "--lang" || arg === "-l");
+  if (langIndex !== -1 && langIndex + 1 < inputArgs.length) {
+    lang = inputArgs[langIndex + 1];
+    inputArgs.splice(langIndex, 2); // Remove --lang and its value
+  }
+
+  if (inputArgs.length > 0) {
+    const input = inputArgs.join(" ");
+    await run(input, lang);
   } else {
     const isTTY = process.stdin.isTTY;
     const rl = readline.createInterface({
@@ -50,7 +63,7 @@ const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
         rl.pause();
         const text = lines.join("\n");
         lines = [];
-        await run(text);
+        await run(text, lang);
         rl.resume();
       } else {
         lines.push(line);
@@ -73,13 +86,13 @@ const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
   }
 })();
 
-async function run(text) {
+async function run(text, lang = DEFAULT_LANGUAGE) {
   if (text.trim() === "") {
     return;
   }
 
   try {
-    const messages = generateMessages(text);
+    const messages = generateMessages(text, lang);
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages,
@@ -97,11 +110,11 @@ async function run(text) {
   }
 }
 
-function generateMessages(text) {
+function generateMessages(text, lang = DEFAULT_LANGUAGE) {
   return [
     {
       role: "system",
-      content: `Please edit the text below to make it sound more natural.
+      content: `Please edit the text below to make it sound more natural in ${lang}.
 
 ====
 ${text}
