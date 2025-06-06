@@ -1,6 +1,35 @@
 #!/usr/bin/env node
 import { OpenAI } from "openai";
 import rc from "rc";
+import meow from "meow";
+
+const cli = meow(`
+	Usage
+	  $ rephrase <text> [count] [options]
+
+	Options
+	  --lang, -l     Target language (default: English)
+	  --help, -h     Show help
+	  --version, -v  Show version
+
+	Examples
+	  $ rephrase "Hello world"
+	  $ rephrase "Hello world" 3
+	  $ rephrase "Hello world" --lang Japanese
+	  $ rephrase "Hello world" 3 --lang Spanish
+
+	Configuration
+	  Save your OpenAI API key in ~/.config/chatgptenglish file:
+	  echo 'OPENAI_API_KEY=your_api_key_here' > ~/.config/chatgptenglish
+`, {
+	importMeta: import.meta,
+	flags: {
+		lang: {
+			type: 'string',
+			shortFlag: 'l'
+		}
+	}
+});
 
 const config = rc("chatgptenglish");
 const OPENAI_API_KEY = config.OPENAI_API_KEY;
@@ -16,18 +45,14 @@ const openai = new OpenAI({
 });
 
 (async function main() {
-  let lang = DEFAULT_LANGUAGE;
-  let inputArgs = process.argv.slice(2);
-  
-  // Check for --lang option
-  const langIndex = inputArgs.findIndex(arg => arg === "--lang" || arg === "-l");
-  if (langIndex !== -1 && langIndex + 1 < inputArgs.length) {
-    lang = inputArgs[langIndex + 1];
-    inputArgs.splice(langIndex, 2); // Remove --lang and its value
-  }
+  const lang = cli.flags.lang || DEFAULT_LANGUAGE;
+  const input = cli.input[0];
+  const count = cli.input[1] ?? 5;
 
-  const input = inputArgs[0];
-  const count = inputArgs[1] ?? 5;
+  if (!input) {
+    cli.showHelp();
+    return;
+  }
 
   await run(input, count, lang);
 })();

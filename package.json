@@ -12,6 +12,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "meow": "^13.2.0",
     "openai": "^4.24.3",
     "rc": "^1.2.8"
   },
