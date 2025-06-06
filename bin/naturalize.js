@@ -3,6 +3,7 @@ import { OpenAI } from "openai";
 import rc from "rc";
 import readline from "node:readline";
 import { Writable } from "node:stream";
+import meow from "meow";
 
 // https://stackoverflow.com/questions/24037545
 let isStdoutMuted = false;
@@ -13,6 +14,34 @@ const writableStdout = new Writable({
     }
     callback();
   },
+});
+
+const cli = meow(`
+	Usage
+	  $ naturalize [text] [options]
+
+	Options
+	  --lang, -l     Target language (default: English)
+	  --help, -h     Show help
+	  --version, -v  Show version
+
+	Examples
+	  $ naturalize "This sentence need fix"
+	  $ naturalize "Hello world" --lang Japanese
+	  $ echo "This sentence need fix" | naturalize
+	  $ naturalize  # Interactive mode
+
+	Configuration
+	  Save your OpenAI API key in ~/.config/chatgptenglish file:
+	  echo 'OPENAI_API_KEY=your_api_key_here' > ~/.config/chatgptenglish
+`, {
+	importMeta: import.meta,
+	flags: {
+		lang: {
+			type: 'string',
+			shortFlag: 'l'
+		}
+	}
 });
 
 const config = rc("chatgptenglish");
@@ -27,18 +56,10 @@ if (!OPENAI_API_KEY) {
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 (async function main() {
-  let lang = DEFAULT_LANGUAGE;
-  let inputArgs = process.argv.slice(2);
-  
-  // Check for --lang option
-  const langIndex = inputArgs.findIndex(arg => arg === "--lang" || arg === "-l");
-  if (langIndex !== -1 && langIndex + 1 < inputArgs.length) {
-    lang = inputArgs[langIndex + 1];
-    inputArgs.splice(langIndex, 2); // Remove --lang and its value
-  }
+  const lang = cli.flags.lang || DEFAULT_LANGUAGE;
+  const input = cli.input.join(" ");
 
-  if (inputArgs.length > 0) {
-    const input = inputArgs.join(" ");
+  if (input) {
     await run(input, lang);
   } else {
     const isTTY = process.stdin.isTTY;
